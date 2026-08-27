@@ -1,1170 +1,990 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ketteh — Full-Stack &amp; Minecraft Plugin Developer</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --void:#0a0c10;
-    --slate:#12161f;
-    --slate-2:#171c27;
-    --line:#232b38;
-    --ink:#e7ecf5;
-    --ink-dim:#8993a4;
-    --ink-faint:#525c6c;
-    --glint:#a480ff;
-    --glint-dim:#7c5fd6;
-    --redstone:#ff6a5f;
-    --mc-green:#6dff8f;
-    --mc-aqua:#5fe8ff;
-    --mc-yellow:#ffe066;
-    --mc-purple:#e07bff;
-    --mc-red:#ff6b6b;
-    --mc-gray:#9aa5b5;
-    --font-mono:'JetBrains Mono', ui-monospace, monospace;
-    --font-body:'Manrope', -apple-system, sans-serif;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  *{margin:0;padding:0;box-sizing:border-box;}
+  <title>Vodzy — Developer</title>
 
-  html{scroll-behavior:smooth;}
-
-  body{
-    background:var(--void);
-    color:var(--ink);
-    font-family:var(--font-body);
-    line-height:1.6;
-    overflow-x:hidden;
-  }
-
-  body::before{
-    content:"";
-    position:fixed;
-    inset:0;
-    background-image:
-      radial-gradient(circle at 15% 10%, rgba(164,128,255,0.08), transparent 40%),
-      radial-gradient(circle at 85% 30%, rgba(95,232,255,0.06), transparent 45%),
-      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-    background-size:auto, auto, 42px 42px, 42px 42px;
-    pointer-events:none;
-    z-index:0;
-  }
-
-  a{color:inherit;text-decoration:none;}
-  ::selection{background:var(--glint);color:var(--void);}
-
-  a:focus-visible, button:focus-visible{
-    outline:2px solid var(--mc-aqua);
-    outline-offset:3px;
-    border-radius:4px;
-  }
-
-  .wrap{
-    max-width:1180px;
-    margin:0 auto;
-    padding:0 32px;
-    position:relative;
-    z-index:1;
-  }
-
-  /* ---------- NAV ---------- */
-  nav{
-    position:fixed;
-    top:0;left:0;right:0;
-    z-index:50;
-    backdrop-filter:blur(14px);
-    background:rgba(10,12,16,0.72);
-    border-bottom:1px solid var(--line);
-  }
-  .nav-inner{
-    max-width:1180px;
-    margin:0 auto;
-    padding:18px 32px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-  }
-  .brand{
-    font-family:var(--font-mono);
-    font-weight:700;
-    font-size:15px;
-    letter-spacing:0.02em;
-    display:flex;
-    align-items:center;
-    gap:8px;
-  }
-  .brand .dot{
-    width:8px;height:8px;border-radius:50%;
-    background:var(--mc-green);
-    box-shadow:0 0 8px var(--mc-green);
-    animation:pulse 2.4s ease-in-out infinite;
-  }
-  @keyframes pulse{
-    0%,100%{opacity:1;} 50%{opacity:0.35;}
-  }
-  .nav-links{
-    display:flex;
-    gap:28px;
-    font-size:14px;
-    color:var(--ink-dim);
-  }
-  .nav-links a{transition:color .2s;}
-  .nav-links a:hover{color:var(--ink);}
-
-  /* ---------- HERO ---------- */
-  header.hero{
-    padding:168px 0 90px;
-    position:relative;
-  }
-  .eyebrow{
-    font-family:var(--font-mono);
-    font-size:12.5px;
-    color:var(--mc-green);
-    letter-spacing:0.12em;
-    text-transform:uppercase;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:22px;
-  }
-  .eyebrow::before{
-    content:"§a";
-    color:var(--ink-faint);
-    font-weight:600;
-  }
-  h1.headline{
-    font-family:var(--font-mono);
-    font-weight:800;
-    font-size:clamp(38px, 6vw, 68px);
-    line-height:1.05;
-    letter-spacing:-0.01em;
-    max-width:820px;
-  }
-  h1.headline .grad{
-    background:linear-gradient(90deg, var(--glint), var(--mc-aqua));
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-  }
-  .hero-sub{
-    margin-top:24px;
-    font-size:18px;
-    color:var(--ink-dim);
-    max-width:560px;
-  }
-  .hero-sub strong{color:var(--ink);font-weight:600;}
-
-  .hero-ctas{
-    margin-top:36px;
-    display:flex;
-    gap:14px;
-    flex-wrap:wrap;
-  }
-  .btn{
-    font-family:var(--font-mono);
-    font-size:14px;
-    font-weight:600;
-    padding:13px 22px;
-    border-radius:8px;
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    transition:transform .18s, box-shadow .18s, background .18s, border-color .18s, opacity .18s;
-    border:1px solid transparent;
-    appearance:none;
-    -webkit-appearance:none;
-    background:transparent;
-    margin:0;
-  }
-  button.btn{cursor:pointer;}
-  .btn-primary{
-    background:var(--ink);
-    color:var(--void);
-  }
-  .btn-primary:hover{
-    transform:translateY(-2px);
-    box-shadow:0 10px 30px -8px rgba(164,128,255,0.5);
-    background:var(--glint);
-    color:#fff;
-  }
-  .btn-ghost{
-    background:transparent;
-    border-color:var(--line);
-    color:var(--ink);
-  }
-  .btn-ghost:hover{
-    border-color:var(--glint-dim);
-    transform:translateY(-2px);
-    background:rgba(164,128,255,0.06);
-  }
-  .btn:disabled{
-    opacity:0.7;
-    cursor:default;
-    transform:none;
-  }
-  .btn-primary:disabled{background:var(--ink); color:var(--void);}
-  .btn-ghost:disabled{background:rgba(164,128,255,0.06); border-color:var(--glint-dim); color:var(--ink);}
-
-  /* ---------- CONSOLE (signature element) ---------- */
-  .console{
-    margin-top:64px;
-    background:var(--slate);
-    border:1px solid var(--line);
-    border-radius:12px;
-    overflow:hidden;
-    box-shadow:0 30px 80px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(255,255,255,0.02);
-    max-width:760px;
-  }
-  .console-bar{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:12px 16px;
-    background:var(--slate-2);
-    border-bottom:1px solid var(--line);
-  }
-  .console-dots{display:flex;gap:7px;}
-  .console-dots span{width:10px;height:10px;border-radius:50%;display:block;}
-  .console-dots span:nth-child(1){background:#ff5f56;}
-  .console-dots span:nth-child(2){background:#ffbd2e;}
-  .console-dots span:nth-child(3){background:#27c93f;}
-  .console-title{
-    font-family:var(--font-mono);
-    font-size:12px;
-    color:var(--ink-faint);
-  }
-  .console-body{
-    font-family:var(--font-mono);
-    font-size:13.5px;
-    padding:20px 22px 24px;
-    min-height:230px;
-    line-height:1.85;
-  }
-  .console-line{opacity:0;}
-  .console-line.show{opacity:1;}
-  .console-line .cmd-in{color:var(--mc-yellow);}
-  .console-line .cmd-in::before{content:"❯ ";color:var(--ink-faint);}
-  .console-line .out{color:var(--ink-dim);padding-left:18px;display:block;}
-  .cursor{
-    display:inline-block;
-    width:7px;height:14px;
-    background:var(--mc-green);
-    vertical-align:middle;
-    margin-left:2px;
-    animation:blink 1s steps(1) infinite;
-  }
-  @keyframes blink{50%{opacity:0;}}
-
-  .mc-a{color:var(--mc-green);}
-  .mc-b{color:var(--mc-aqua);}
-  .mc-c{color:var(--mc-red);}
-  .mc-d{color:var(--mc-purple);}
-  .mc-e{color:var(--mc-yellow);}
-  .mc-f{color:#fff;}
-  .mc-7{color:var(--mc-gray);}
-  .mc-8{color:var(--ink-faint);}
-
-  /* ---------- STATS STRIP ---------- */
-  .stats{
-    border-top:1px solid var(--line);
-    border-bottom:1px solid var(--line);
-    padding:34px 0;
-    margin-top:96px;
-  }
-  .stats-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:24px;
-  }
-  .stat b{
-    font-family:var(--font-mono);
-    font-size:28px;
-    display:block;
-    color:var(--ink);
-  }
-  .stat span{
-    font-size:13px;
-    color:var(--ink-dim);
-  }
-
-  /* ---------- SECTION HEADERS ---------- */
-  .section{padding:110px 0;}
-  .section-head{
-    display:flex;
-    align-items:baseline;
-    justify-content:space-between;
-    margin-bottom:52px;
-    flex-wrap:wrap;
-    gap:14px;
-  }
-  .section-tag{
-    font-family:var(--font-mono);
-    font-size:12.5px;
-    color:var(--glint);
-    letter-spacing:0.1em;
-    text-transform:uppercase;
-    margin-bottom:10px;
-    display:block;
-  }
-  h2.section-title{
-    font-family:var(--font-mono);
-    font-weight:700;
-    font-size:clamp(26px,3.4vw,36px);
-  }
-  .section-note{
-    color:var(--ink-dim);
-    font-size:14.5px;
-    max-width:320px;
-    text-align:right;
-  }
-
-  /* ---------- PROJECTS ---------- */
-  .projects{
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-  }
-  .project{
-    border:1px solid var(--line);
-    border-radius:14px;
-    background:linear-gradient(180deg, var(--slate), rgba(18,22,31,0.4));
-    padding:36px;
-    display:grid;
-    grid-template-columns:1fr 1.15fr;
-    gap:40px;
-    transition:border-color .25s, transform .25s;
-    position:relative;
-    overflow:hidden;
-  }
-  .project::before{
-    content:"";
-    position:absolute;
-    top:0;left:0;right:0;height:1px;
-    background:linear-gradient(90deg, transparent, var(--proj-color, var(--glint)), transparent);
-    opacity:0;
-    transition:opacity .3s;
-  }
-  .project:hover{
-    border-color:rgba(164,128,255,0.35);
-  }
-  .project:hover::before{opacity:0.7;}
-
-  .project-flag{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    font-family:var(--font-mono);
-    font-size:11.5px;
-    letter-spacing:0.08em;
-    text-transform:uppercase;
-    color:var(--proj-color, var(--glint));
-    margin-bottom:16px;
-  }
-  .project-flag::before{
-    content:"";
-    width:6px;height:6px;
-    background:var(--proj-color, var(--glint));
-    border-radius:50%;
-  }
-  .project-cmd{
-    font-family:var(--font-mono);
-    font-size:24px;
-    font-weight:700;
-    color:var(--ink);
-    margin-bottom:8px;
-  }
-  .project-cmd .lead{color:var(--proj-color, var(--glint));}
-  .project-tagline{
-    color:var(--ink-dim);
-    font-size:15px;
-    margin-bottom:20px;
-  }
-  .project-tags{
-    display:flex;
-    flex-wrap:wrap;
-    gap:8px;
-  }
-  .tag{
-    font-family:var(--font-mono);
-    font-size:11.5px;
-    padding:5px 10px;
-    border:1px solid var(--line);
-    border-radius:6px;
-    color:var(--ink-dim);
-  }
-  .project-body{
-    border-left:1px solid var(--line);
-    padding-left:36px;
-  }
-  .project-desc{
-    color:var(--ink-dim);
-    font-size:14.5px;
-    margin-bottom:18px;
-  }
-  .feature-list{list-style:none;}
-  .feature-list li{
-    display:flex;
-    gap:10px;
-    font-size:14px;
-    color:var(--ink);
-    padding:7px 0;
-    border-top:1px solid rgba(255,255,255,0.04);
-  }
-  .feature-list li:first-child{border-top:none;}
-  .feature-list li::before{
-    content:"▸";
-    color:var(--proj-color, var(--glint));
-    flex-shrink:0;
-  }
-
-  @media (max-width:820px){
-    .project{grid-template-columns:1fr;}
-    .project-body{border-left:none;padding-left:0;border-top:1px solid var(--line);padding-top:24px;}
-  }
-
-  /* ---------- EXPERIENCE / SERVER LIST ---------- */
-  .server-panel{
-    border:1px solid var(--line);
-    border-radius:12px;
-    background:var(--slate);
-    overflow:hidden;
-  }
-  .server-panel-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:14px 20px;
-    background:var(--slate-2);
-    border-bottom:1px solid var(--line);
-    font-family:var(--font-mono);
-    font-size:11.5px;
-    color:var(--ink-faint);
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-  }
-  .server-row{
-    display:grid;
-    grid-template-columns:16px 1fr 150px 1.4fr 74px;
-    align-items:center;
-    gap:20px;
-    padding:18px 20px;
-    border-bottom:1px solid rgba(255,255,255,0.045);
-    transition:background .2s;
-  }
-  .server-row:last-child{border-bottom:none;}
-  .server-row:hover{background:rgba(255,255,255,0.02);}
-  .server-status{
-    width:9px;height:9px;
-    border-radius:50%;
-    background:var(--ink-faint);
-  }
-  .server-row.is-current .server-status{
-    background:var(--mc-green);
-    box-shadow:0 0 8px var(--mc-green);
-  }
-  .server-name{
-    font-family:var(--font-mono);
-    font-weight:700;
-    font-size:15px;
-  }
-  .server-name small{
-    display:block;
-    font-family:var(--font-body);
-    font-weight:500;
-    font-size:12px;
-    color:var(--ink-faint);
-    margin-top:2px;
-  }
-  .server-role{
-    font-size:13px;
-    color:var(--ink-dim);
-  }
-  .server-pop{display:flex; flex-direction:column; gap:6px;}
-  .pop-track{
-    width:100%;
-    height:5px;
-    border-radius:3px;
-    background:rgba(255,255,255,0.06);
-    overflow:hidden;
-  }
-  .pop-fill{
-    height:100%;
-    border-radius:3px;
-    background:linear-gradient(90deg, var(--glint), var(--mc-aqua));
-  }
-  .pop-label{
-    font-family:var(--font-mono);
-    font-size:11.5px;
-    color:var(--ink-faint);
-  }
-  .server-tag{
-    font-family:var(--font-mono);
-    font-size:10.5px;
-    text-align:center;
-    padding:5px 8px;
-    border-radius:6px;
-    text-transform:uppercase;
-    letter-spacing:0.04em;
-    justify-self:end;
-    border:1px solid var(--line);
-    color:var(--ink-dim);
-  }
-  .server-tag.current{
-    color:var(--mc-green);
-    border-color:rgba(109,255,143,0.35);
-    background:rgba(109,255,143,0.08);
-  }
-  .server-footnote{
-    padding:16px 20px;
-    font-size:13px;
-    color:var(--ink-dim);
-    background:var(--slate-2);
-    border-top:1px solid var(--line);
-  }
-  .server-footnote strong{color:var(--ink);}
-
-  @media (max-width:720px){
-    .server-row{
-      grid-template-columns:1fr auto;
-      grid-template-areas:
-        "name tag"
-        "role role"
-        "pop pop";
-      row-gap:8px;
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    .server-status{display:none;}
-    .server-name{grid-area:name;}
-    .server-tag{grid-area:tag;}
-    .server-role{grid-area:role;}
-    .server-pop{grid-area:pop;}
-  }
 
-  /* ---------- CONTACT COPY BUTTONS ---------- */
-  .btn-copy{
-    cursor:pointer;
-    font-family:var(--font-mono);
-  }
-  .copy-hint{
-    display:block;
-    margin-top:10px;
-    font-family:var(--font-mono);
-    font-size:11px;
-    color:var(--ink-faint);
-  }
+    :root {
+      --bg: #08090d;
+      --card: #0e1016;
+      --card2: #12141c;
+      --border: rgba(255,255,255,.08);
+      --text: #f5f5f7;
+      --muted: #969ba8;
+      --purple: #8b7cff;
+      --green: #56d89a;
+    }
 
-  /* ---------- SKILLS ---------- */
-  .skills-grid{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:16px;
-  }
-  .skill-card{
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:26px 24px;
-    background:var(--slate);
-  }
-  .skill-card .code{
-    font-family:var(--font-mono);
-    font-size:11px;
-    color:var(--ink-faint);
-    margin-bottom:12px;
-    display:block;
-  }
-  .skill-card h3{
-    font-family:var(--font-mono);
-    font-size:17px;
-    margin-bottom:10px;
-  }
-  .skill-card p{
-    font-size:13.5px;
-    color:var(--ink-dim);
-  }
-  .skill-card.wide{grid-column:span 4;}
+    html {
+      scroll-behavior: smooth;
+    }
 
-  @media (max-width:900px){
-    .skills-grid{grid-template-columns:repeat(2,1fr);}
-    .skill-card.wide{grid-column:span 2;}
-  }
-  @media (max-width:560px){
-    .skills-grid{grid-template-columns:1fr;}
-    .skill-card.wide{grid-column:span 1;}
-  }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
+    }
 
-  /* ---------- ABOUT ---------- */
-  .about-grid{
-    display:grid;
-    grid-template-columns:0.9fr 1.1fr;
-    gap:60px;
-    align-items:start;
-  }
-  .about-body p{
-    color:var(--ink-dim);
-    font-size:15.5px;
-    margin-bottom:16px;
-    max-width:520px;
-  }
-  .about-body strong{color:var(--ink);font-weight:600;}
-  .timeline{
-    border-left:1px solid var(--line);
-    padding-left:24px;
-    display:flex;
-    flex-direction:column;
-    gap:26px;
-  }
-  .timeline-item .t-when{
-    font-family:var(--font-mono);
-    font-size:12px;
-    color:var(--mc-aqua);
-    margin-bottom:4px;
-  }
-  .timeline-item .t-what{font-weight:600;margin-bottom:4px;}
-  .timeline-item .t-detail{font-size:13.5px;color:var(--ink-dim);}
+    body::before {
+      content: "";
+      position: fixed;
+      width: 700px;
+      height: 700px;
+      background: #796cff12;
+      filter: blur(130px);
+      border-radius: 50%;
+      top: -350px;
+      left: -250px;
+      pointer-events: none;
+      z-index: -1;
+    }
 
-  @media (max-width:820px){
-    .about-grid{grid-template-columns:1fr;gap:40px;}
-  }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-  /* ---------- CONTACT ---------- */
-  .contact{
-    text-align:center;
-    padding:130px 0 100px;
-    border-top:1px solid var(--line);
-  }
-  .contact .section-tag{margin:0 auto 14px;text-align:center;}
-  .contact h2{
-    font-family:var(--font-mono);
-    font-weight:800;
-    font-size:clamp(30px,5vw,52px);
-    max-width:760px;
-    margin:0 auto 20px;
-  }
-  .contact p{
-    color:var(--ink-dim);
-    max-width:480px;
-    margin:0 auto 36px;
-    font-size:15.5px;
-  }
-  .contact-links{
-    display:flex;
-    gap:14px;
-    justify-content:center;
-    flex-wrap:wrap;
-  }
+    .container {
+      width: min(1120px, calc(100% - 40px));
+      margin: auto;
+    }
 
-  footer{
-    padding:28px 0 40px;
-    text-align:center;
-    font-family:var(--font-mono);
-    font-size:12px;
-    color:var(--ink-faint);
-  }
+    /* NAV */
 
-  @media (max-width:640px){
-    .wrap{padding:0 20px;}
-    .stats-grid{grid-template-columns:repeat(2,1fr);}
-    .section-head{flex-direction:column;align-items:flex-start;}
-    .section-note{text-align:left;}
-    .nav-links{display:none;}
-    .project{padding:24px;}
-  }
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 100;
+      background: rgba(8,9,13,.75);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
 
-  @media (prefers-reduced-motion: reduce){
-    *{animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; scroll-behavior:auto !important;}
-  }
-</style>
+    .nav {
+      height: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -.5px;
+    }
+
+    .logo span {
+      color: var(--purple);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .nav-links a {
+      transition: .2s;
+    }
+
+    .nav-links a:hover {
+      color: white;
+    }
+
+    /* HERO */
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 70px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 12px;
+      border: 1px solid var(--border);
+      background: #ffffff05;
+      border-radius: 999px;
+      color: #c7cad2;
+      font-size: 13px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 15px #56d89a;
+    }
+
+    h1 {
+      font-size: clamp(52px, 7vw, 86px);
+      line-height: .94;
+      letter-spacing: -5px;
+      margin: 25px 0;
+    }
+
+    h1 span {
+      background: linear-gradient(
+        100deg,
+        #ffffff,
+        #a49aff,
+        #6ee4d1
+      );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-description {
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 650px;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      padding: 12px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--card2);
+      font-size: 14px;
+      font-weight: 700;
+      transition: .2s;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      border-color: #8b7cff80;
+    }
+
+    .button.primary {
+      background: var(--purple);
+      border-color: var(--purple);
+      box-shadow: 0 12px 35px #8b7cff35;
+    }
+
+    /* TERMINAL */
+
+    .terminal {
+      background: #0c0e13;
+      border: 1px solid var(--border);
+      border-radius: 17px;
+      overflow: hidden;
+      box-shadow: 0 30px 100px #0008;
+    }
+
+    .terminal-top {
+      height: 43px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 0 15px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-top i {
+      width: 9px;
+      height: 9px;
+      background: #3e424d;
+      border-radius: 50%;
+    }
+
+    .terminal-body {
+      padding: 24px;
+      font-family: Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.9;
+    }
+
+    .terminal-muted {
+      color: #656b78;
+    }
+
+    .terminal-purple {
+      color: #9b91ff;
+    }
+
+    .terminal-green {
+      color: #62d9a1;
+    }
+
+    /* SECTIONS */
+
+    section {
+      padding: 110px 0;
+    }
+
+    .section-label {
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 42px;
+      letter-spacing: -2px;
+    }
+
+    .section-description {
+      color: var(--muted);
+      margin-top: 9px;
+      max-width: 650px;
+    }
+
+    /* SKILLS */
+
+    .skills {
+      margin-top: 35px;
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 14px;
+    }
+
+    .skill {
+      padding: 24px;
+      background: linear-gradient(
+        180deg,
+        #ffffff08,
+        #ffffff03
+      );
+      border: 1px solid var(--border);
+      border-radius: 15px;
+    }
+
+    .skill-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      background: #8b7cff15;
+      color: #aaa1ff;
+      margin-bottom: 17px;
+      font-weight: 800;
+    }
+
+    .skill h3 {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .skill p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* PROJECTS */
+
+    .projects {
+      margin-top: 35px;
+      display: grid;
+      grid-template-columns: repeat(2,1fr);
+      gap: 18px;
+    }
+
+    .project {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 17px;
+      transition: .25s;
+    }
+
+    .project:hover {
+      transform: translateY(-4px);
+      border-color: #8b7cff40;
+    }
+
+    .project-image {
+      width: 100%;
+      height: 240px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .project-content {
+      padding: 24px;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+
+    .tag {
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: #c0c4ce;
+      font-size: 11px;
+    }
+
+    .project h3 {
+      font-size: 23px;
+      margin-bottom: 8px;
+    }
+
+    .project p {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* EXPERIENCE */
+
+    .experience {
+      margin-top: 35px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .experience-card {
+      display: grid;
+      grid-template-columns: 150px 1fr auto;
+      gap: 25px;
+      align-items: center;
+      padding: 23px;
+      background: linear-gradient(
+        180deg,
+        #ffffff07,
+        #ffffff03
+      );
+      border: 1px solid var(--border);
+      border-radius: 15px;
+    }
+
+    .experience-status {
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .experience h3 {
+      font-size: 17px;
+      margin-bottom: 5px;
+    }
+
+    .experience p {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .discord-link {
+      color: #a69dff;
+      font-size: 13px;
+    }
+
+    /* ABOUT */
+
+    .about-box {
+      margin-top: 35px;
+      padding: 30px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 17px;
+    }
+
+    .about-box p {
+      color: var(--muted);
+      line-height: 1.9;
+      max-width: 850px;
+    }
+
+    .about-box strong {
+      color: white;
+    }
+
+    /* CONTACT */
+
+    .contact {
+      text-align: center;
+      padding: 75px 25px;
+      background:
+        radial-gradient(
+          circle at 50% 0%,
+          #8b7cff22,
+          transparent 60%
+        ),
+        var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+    }
+
+    .contact h2 {
+      font-size: 45px;
+    }
+
+    .contact p {
+      max-width: 620px;
+      margin: 12px auto;
+      color: var(--muted);
+    }
+
+    .contact .buttons {
+      justify-content: center;
+    }
+
+    footer {
+      text-align: center;
+      padding: 35px 0 45px;
+      color: #626774;
+      font-size: 12px;
+    }
+
+    /* MOBILE */
+
+    @media(max-width: 850px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 45px;
+      }
+
+      .skills {
+        grid-template-columns: repeat(2,1fr);
+      }
+
+      .projects {
+        grid-template-columns: 1fr;
+      }
+
+      .experience-card {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+    }
+
+    @media(max-width: 500px) {
+      .container {
+        width: calc(100% - 26px);
+      }
+
+      h1 {
+        font-size: 53px;
+        letter-spacing: -3px;
+      }
+
+      .skills {
+        grid-template-columns: 1fr;
+      }
+
+      h2 {
+        font-size: 35px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
 <nav>
-  <div class="nav-inner">
-    <div class="brand"><span class="dot"></span>ketteh<span style="color:var(--ink-faint)">.dev</span></div>
+  <div class="container nav">
+    <a href="#" class="logo">vodzy<span>.</span></a>
+
     <div class="nav-links">
-      <a href="#work">work</a>
-      <a href="#experience">experience</a>
-      <a href="#skills">skills</a>
-      <a href="#about">about</a>
-      <a href="#contact">contact</a>
+      <a href="#about">About</a>
+      <a href="#projects">Projects</a>
+      <a href="#experience">Experience</a>
+      <a href="#contact">Contact</a>
     </div>
   </div>
 </nav>
 
-<header class="hero">
-  <div class="wrap">
-    <div class="eyebrow">online · accepting new work</div>
-    <h1 class="headline">Full-stack developer who also <span class="grad">runs the server console.</span></h1>
-    <p class="hero-sub">
-      I'm <strong>Ketteh</strong> — 2+ years writing production code across the stack, with a specialty in
-      <strong>Java</strong>, <strong>Kotlin</strong>, and <strong>Skript</strong> for Minecraft server tooling.
-      I'm also an experienced <strong>sysadmin</strong>, so I don't just write the code — I keep the machines
-      it runs on alive. Moderation suites, live events, and the quiet utilities that keep a server honest.
-    </p>
-    <div class="hero-ctas">
-      <a href="#work" class="btn btn-primary">See the work</a>
-      <a href="#contact" class="btn btn-ghost">Get in touch</a>
-    </div>
 
-    <div class="console">
-      <div class="console-bar">
-        <div class="console-dots"><span></span><span></span><span></span></div>
-        <div class="console-title">server-console.log</div>
-        <div style="width:52px"></div>
-      </div>
-      <div class="console-body" id="consoleBody" aria-live="polite"></div>
-    </div>
-  </div>
-</header>
+<main>
 
-<div class="stats">
-  <div class="wrap stats-grid">
-    <div class="stat"><b>2+ yrs</b><span>writing production code</span></div>
-    <div class="stat"><b>4</b><span>shipped Minecraft plugins</span></div>
-    <div class="stat"><b>1,300+</b><span>lines of staff-suite Skript</span></div>
-    <div class="stat"><b>3</b><span>languages: Java, Kotlin, Skript</span></div>
-  </div>
-</div>
+  <!-- HERO -->
 
-<section class="section" id="work">
-  <div class="wrap">
-    <div class="section-head">
+  <section class="hero">
+    <div class="container hero-grid">
+
       <div>
-        <span class="section-tag">§b selected work</span>
-        <h2 class="section-title">Things I've shipped</h2>
+
+        <div class="status">
+          <span class="status-dot"></span>
+          Available for development work
+        </div>
+
+        <h1>
+          Developer.<br>
+          <span>Builder.</span>
+        </h1>
+
+        <p class="hero-description">
+          I'm a full-stack developer and sysadmin focused on
+          Java, Kotlin, Discord bot development, backend systems,
+          automation, and server infrastructure.
+        </p>
+
+        <div class="buttons">
+          <a href="#projects" class="button primary">
+            View Projects
+          </a>
+
+          <a href="#contact" class="button">
+            Contact Me
+          </a>
+        </div>
+
       </div>
-      <p class="section-note">Real plugins running real commands — GUIs, live events, and staff tooling built in Skript.</p>
-    </div>
 
-    <div class="projects">
 
-      <div class="project" style="--proj-color:#e07bff">
-        <div>
-          <span class="project-flag">flagship · staff tooling</span>
-          <div class="project-cmd"><span class="lead">/</span>punish</div>
-          <div class="project-tagline">A complete staff moderation suite — the backbone of the server's admin team.</div>
-          <div class="project-tags">
-            <span class="tag">Skript</span>
-            <span class="tag">Custom GUIs</span>
-            <span class="tag">Data persistence</span>
-            <span class="tag">1,250+ lines</span>
+      <div class="terminal">
+
+        <div class="terminal-top">
+          <i></i>
+          <i></i>
+          <i></i>
+        </div>
+
+        <div class="terminal-body">
+
+          <div>
+            <span class="terminal-muted">$</span>
+            whoami
           </div>
-        </div>
-        <div class="project-body">
-          <p class="project-desc">
-            Every punishment flows through inventory-based GUIs instead of raw commands — warn, mute, ban,
-            and permaban each get their own confirmation menu so staff can't fat-finger a punishment.
-            Built alongside it: a risk-scoring system for repeat offenders, alt-account detection, and a
-            full investigation view per player.
-          </p>
-          <ul class="feature-list">
-            <li>Warn / mute / ban / permaban flows, each with a dedicated confirmation GUI</li>
-            <li>Per-player risk score, investigation report, and history log</li>
-            <li>Alt-account detection and note-taking on player profiles</li>
-            <li>Freeze, jail, and spectate tools for handling live incidents</li>
-            <li>Staff chat, on-duty toggle, and an online-staff roster</li>
-            <li>Paginated chat logs, player reports, and full punishment history</li>
-          </ul>
-        </div>
-      </div>
 
-      <div class="project" style="--proj-color:#6dff8f">
-        <div>
-          <span class="project-flag">live event engine</span>
-          <div class="project-cmd"><span class="lead">/</span>startkoth</div>
-          <div class="project-tagline">King of the Hill — a capture-point event with its own gradient text engine.</div>
-          <div class="project-tags">
-            <span class="tag">Skript</span>
-            <span class="tag">Custom math</span>
-            <span class="tag">Particles</span>
+          <div class="terminal-green">
+            Vodzy
           </div>
-        </div>
-        <div class="project-body">
-          <p class="project-desc">
-            Bundled inside the same plugin: a full event lifecycle, from a one-hour countdown broadcast in
-            gradient text through a live capture-point fight to a rewarded win. The gradient renderer
-            interpolates RGB hex values character-by-character — no external library, just math.
-          </p>
-          <ul class="feature-list">
-            <li>Hand-written RGB gradient text renderer for hex-color chat broadcasts</li>
-            <li>Per-second region contest detection with automatic pause on contest</li>
-            <li>Animated particle outline marking the live capture zone</li>
-            <li>Action-bar countdown and milestone alerts at 30s / 10s remaining</li>
-          </ul>
-        </div>
-      </div>
 
-      <div class="project" style="--proj-color:#5fe8ff">
-        <div>
-          <span class="project-flag">utility</span>
-          <div class="project-cmd"><span class="lead">/</span>extravanish</div>
-          <div class="project-tagline">Layered visibility — vanished staff never break each other's cover.</div>
-          <div class="project-tags">
-            <span class="tag">Skript</span>
-            <span class="tag">Permissions</span>
+          <br>
+
+          <div>
+            <span class="terminal-muted">$</span>
+            languages
           </div>
-        </div>
-        <div class="project-body">
-          <p class="project-desc">
-            A vanish command that tracks visibility as a relationship between every pair of online players,
-            not a single on/off flag — so two vanished staff members can still see each other while staying
-            invisible to everyone else, and join/quit messages stay silent.
-          </p>
-          <ul class="feature-list">
-            <li>Per-pair hide/reveal logic across every online player</li>
-            <li>Silent join and quit messages while vanished</li>
-            <li>Live <span style="color:var(--ink)">/exvlist</span> of everyone currently vanished</li>
-          </ul>
-        </div>
-      </div>
 
-      <div class="project" style="--proj-color:#ffe066">
-        <div>
-          <span class="project-flag">utility</span>
-          <div class="project-cmd"><span class="lead">/</span>cmdspy</div>
-          <div class="project-tagline">Quiet oversight — every command, mirrored to the staff who asked for it.</div>
-          <div class="project-tags">
-            <span class="tag">Skript</span>
-            <span class="tag">Lightweight</span>
+          <div class="terminal-purple">
+            Java · Kotlin · JavaScript
           </div>
+
+          <br>
+
+          <div>
+            <span class="terminal-muted">$</span>
+            specialties
+          </div>
+
+          <div class="terminal-purple">
+            Full-Stack · Discord · Sysadmin
+          </div>
+
+          <br>
+
+          <div>
+            <span class="terminal-muted">$</span>
+            status
+          </div>
+
+          <div class="terminal-green">
+            ● Online
+          </div>
+
         </div>
-        <div class="project-body">
-          <p class="project-desc">
-            A small, focused tool: staff opt in and every command run on the server gets mirrored to them
-            in real time, with clean on/off/toggle handling and self-exclusion so cmdspy doesn't spy on itself.
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ABOUT -->
+
+  <section id="about">
+
+    <div class="container">
+
+      <div class="section-label">
+        01 / About
+      </div>
+
+      <h2>What I do</h2>
+
+      <p class="section-description">
+        I build and maintain software, bots, backend systems,
+        and infrastructure for online communities and projects.
+      </p>
+
+
+      <div class="about-box">
+
+        <p>
+          I'm a <strong>full-stack developer and sysadmin</strong>
+          with experience working on Discord communities,
+          Minecraft-related projects, and custom infrastructure.
+          My main development languages are
+          <strong>Java</strong> and <strong>Kotlin</strong>,
+          alongside Discord bot development and backend work.
+        </p>
+
+        <br>
+
+        <p>
+          I focus on building systems that are practical,
+          reliable, and easy for staff or users to actually use.
+          I've worked across development, management,
+          moderation systems, ticket systems, application systems,
+          and server infrastructure.
+        </p>
+
+      </div>
+
+
+      <div class="skills">
+
+        <div class="skill">
+          <div class="skill-icon">J</div>
+          <h3>Java</h3>
+          <p>
+            Backend development, Minecraft development,
+            automation and application systems.
           </p>
-          <ul class="feature-list">
-            <li>Per-player opt-in with on / off / toggle</li>
-            <li>Real-time command mirroring to every subscribed staff member</li>
-            <li>Self-filtering so the command doesn't echo itself</li>
-          </ul>
         </div>
+
+        <div class="skill">
+          <div class="skill-icon">K</div>
+          <h3>Kotlin</h3>
+          <p>
+            JVM development with a focus on clean,
+            modern and maintainable code.
+          </p>
+        </div>
+
+        <div class="skill">
+          <div class="skill-icon">D</div>
+          <h3>Discord Development</h3>
+          <p>
+            Moderation, punishments, tickets,
+            applications and server management bots.
+          </p>
+        </div>
+
+        <div class="skill">
+          <div class="skill-icon">S</div>
+          <h3>Sysadmin</h3>
+          <p>
+            Server management, deployment,
+            maintenance and infrastructure.
+          </p>
+        </div>
+
       </div>
 
     </div>
-  </div>
-</section>
 
-<section class="section" id="experience">
-  <div class="wrap">
-    <div class="section-head">
-      <div>
-        <span class="section-tag">§6 track record</span>
-        <h2 class="section-title">Servers I've built for</h2>
+  </section>
+
+
+  <!-- PROJECTS -->
+
+  <section id="projects">
+
+    <div class="container">
+
+      <div class="section-label">
+        02 / Projects
       </div>
-      <p class="section-note">Six servers, current and past — plus 60+ public and private Skripts shipped along the way.</p>
+
+      <h2>Things I've built</h2>
+
+      <p class="section-description">
+        A few of the systems and Discord projects I've worked on.
+      </p>
+
+
+      <div class="projects">
+
+        <!-- PUNISHER -->
+
+        <article class="project">
+
+          <img
+            class="project-image"
+            src="assets/punisher-profile.png"
+            alt="Punisher Bot"
+          >
+
+          <div class="project-content">
+
+            <div class="tags">
+              <span class="tag">Discord</span>
+              <span class="tag">Moderation</span>
+              <span class="tag">Punishments</span>
+            </div>
+
+            <h3>Punisher Bot</h3>
+
+            <p>
+              A dedicated Discord punishment and moderation bot.
+              It handles staff punishments and keeps structured
+              records of moderation cases including the user,
+              moderator, reason, date and punishment duration.
+            </p>
+
+          </div>
+
+        </article>
+
+
+        <!-- MANAGEMENT -->
+
+        <article class="project">
+
+          <img
+            class="project-image"
+            src="assets/punisher-case.png"
+            alt="Discord management system"
+          >
+
+          <div class="project-content">
+
+            <div class="tags">
+              <span class="tag">Discord</span>
+              <span class="tag">Tickets</span>
+              <span class="tag">Applications</span>
+              <span class="tag">Management</span>
+            </div>
+
+            <h3>Management Bot</h3>
+
+            <p>
+              A Discord management bot built around staff workflows.
+              It handles ticket systems, applications and other
+              management features designed to make running a server
+              easier for staff.
+            </p>
+
+          </div>
+
+        </article>
+
+      </div>
+
     </div>
 
-    <div class="server-panel">
-      <div class="server-panel-head">
-        <span>server</span>
-        <span>status</span>
+  </section>
+
+
+  <!-- EXPERIENCE -->
+
+  <section id="experience">
+
+    <div class="container">
+
+      <div class="section-label">
+        03 / Experience
       </div>
 
-      <div class="server-row">
-        <div class="server-status"></div>
-        <div class="server-name">MaceLegends</div>
-        <div class="server-role">Developer</div>
-        <div class="server-pop">
-          <div class="pop-track"><div class="pop-fill" style="width:15%"></div></div>
-          <span class="pop-label">~60 avg players</span>
+      <h2>Experience</h2>
+
+      <p class="section-description">
+        Development and management experience across multiple
+        Minecraft and Discord communities.
+      </p>
+
+
+      <div class="experience">
+
+        <div class="experience-card">
+
+          <div class="experience-status">
+            CURRENT
+          </div>
+
+          <div>
+            <h3>
+              Developer + General Manager · Prestige Tiers
+            </h3>
+
+            <p>
+              Development and general management for a
+              1K+ member community.
+            </p>
+          </div>
+
+          <a
+            class="discord-link"
+            href="https://discord.gg/prestigetiers"
+            target="_blank"
+          >
+            discord.gg/prestigetiers ↗
+          </a>
+
         </div>
-        <div class="server-tag">past</div>
-      </div>
 
-      <div class="server-row">
-        <div class="server-status"></div>
-        <div class="server-name">UtopiaKits</div>
-        <div class="server-role">Developer</div>
-        <div class="server-pop">
-          <div class="pop-track"><div class="pop-fill" style="width:5%"></div></div>
-          <span class="pop-label">~20 avg players</span>
+
+        <div class="experience-card">
+
+          <div class="experience-status">
+            PAST
+          </div>
+
+          <div>
+            <h3>
+              Developer · LunarTiers
+            </h3>
+
+            <p>
+              Developer for a 1.8K+ member community.
+            </p>
+          </div>
+
+          <a
+            class="discord-link"
+            href="https://discord.gg/lunartiers"
+            target="_blank"
+          >
+            discord.gg/lunartiers ↗
+          </a>
+
         </div>
-        <div class="server-tag">past</div>
-      </div>
 
-      <div class="server-row is-current">
-        <div class="server-status"></div>
-        <div class="server-name">SyroKit</div>
-        <div class="server-role">Developer</div>
-        <div class="server-pop">
-          <div class="pop-track"><div class="pop-fill" style="width:15%"></div></div>
-          <span class="pop-label">~60 avg players</span>
+
+        <div class="experience-card">
+
+          <div class="experience-status">
+            PAST
+          </div>
+
+          <div>
+            <h3>
+              Developer · LeoneMC
+            </h3>
+
+            <p>
+              Developer for a 5K+ member community.
+            </p>
+          </div>
+
+          <a
+            class="discord-link"
+            href="https://discord.gg/leonemc"
+            target="_blank"
+          >
+            discord.gg/leonemc ↗
+          </a>
+
         </div>
-        <div class="server-tag current">current</div>
-      </div>
 
-      <div class="server-row">
-        <div class="server-status"></div>
-        <div class="server-name">Leonemc</div>
-        <div class="server-role">Developer &amp; Moderator</div>
-        <div class="server-pop">
-          <div class="pop-track"><div class="pop-fill" style="width:100%"></div></div>
-          <span class="pop-label">400+ avg players</span>
+
+        <div class="experience-card">
+
+          <div class="experience-status">
+            PAST
+          </div>
+
+          <div>
+            <h3>
+              Developer · Strealex
+            </h3>
+
+            <p>
+              Developer for a 1K+ member Discord community.
+              Project has since been discontinued.
+            </p>
+          </div>
+
+          <span class="discord-link">
+            Discontinued
+          </span>
+
         </div>
-        <div class="server-tag">past</div>
+
       </div>
 
-      <div class="server-row is-current">
-        <div class="server-status"></div>
-        <div class="server-name">Bananagens454<small>unreleased</small></div>
-        <div class="server-role">Developer</div>
-        <div class="server-pop">
-          <div class="pop-track"><div class="pop-fill" style="width:4%; opacity:.35"></div></div>
-          <span class="pop-label">unreleased — in development</span>
-        </div>
-        <div class="server-tag current">current</div>
-      </div>
-
-      <div class="server-row">
-        <div class="server-status"></div>
-        <div class="server-name">MaceFuze</div>
-        <div class="server-role">Owner</div>
-        <div class="server-pop">
-          <div class="pop-track"><div class="pop-fill" style="width:14%"></div></div>
-          <span class="pop-label">~50–60 avg players</span>
-        </div>
-        <div class="server-tag">past</div>
-      </div>
-
-      <div class="server-footnote">
-        <strong>60+</strong> Skripts shipped across these servers — public releases and private client work combined.
-      </div>
     </div>
-  </div>
-</section>
 
-<section class="section" id="skills">
-  <div class="wrap">
-    <div class="section-head">
-      <div>
-        <span class="section-tag">§e stack</span>
-        <h2 class="section-title">What I build with</h2>
-      </div>
-      <p class="section-note">Core languages I write daily, plus the full-stack range around them.</p>
-    </div>
+  </section>
 
-    <div class="skills-grid">
-      <div class="skill-card">
-        <span class="code">.java</span>
-        <h3>Java</h3>
-        <p>Backend logic, plugin internals, and the JVM foundation everything else here runs on.</p>
-      </div>
-      <div class="skill-card">
-        <span class="code">.kt</span>
-        <h3>Kotlin</h3>
-        <p>My go-to when I want Java's ecosystem with cleaner syntax and fewer footguns.</p>
-      </div>
-      <div class="skill-card">
-        <span class="code">.sk</span>
-        <h3>Skript</h3>
-        <p>Where I ship fastest — GUIs, event systems, and staff tooling, all scripted and iterated live.</p>
-      </div>
-      <div class="skill-card">
-        <span class="code">/root</span>
-        <h3>System Administration</h3>
-        <p>Experienced sysadmin — server setup, hardening, uptime, and keeping the infrastructure my code runs on actually healthy.</p>
-      </div>
-      <div class="skill-card wide">
-        <span class="code">full-stack</span>
-        <h3>Beyond the server</h3>
-        <p>Comfortable working the whole path from backend logic to the interface on top of it — same
-        instinct for structure and state whether it's a plugin command or a UI, just a different runtime.</p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section class="section" id="about">
-  <div class="wrap">
-    <div class="section-head">
-      <div>
-        <span class="section-tag">§d about</span>
-        <h2 class="section-title">How I got here</h2>
-      </div>
-    </div>
+  <!-- CONTACT -->
 
-    <div class="about-grid">
-      <div class="about-body">
-        <p>I started writing Skript to fix small annoyances on servers I played on — a vanish command that
-        leaked join messages, a punishment flow that took too many steps. Two years later that habit turned
-        into a full staff suite running GUIs, risk scoring, and live event systems.</p>
-        <p>Along the way I picked up <strong>Java</strong> and <strong>Kotlin</strong> to go deeper than Skript's
-        ceiling, and rounded that out with general full-stack development. I like tools that disappear into
-        the background and just work — that's the standard I hold my own code to.</p>
-      </div>
-      <div class="timeline">
-        <div class="timeline-item">
-          <div class="t-when">now</div>
-          <div class="t-what">Full-stack &amp; plugin development</div>
-          <div class="t-detail">Building and maintaining production Minecraft tooling alongside general full-stack work.</div>
+  <section id="contact">
+
+    <div class="container">
+
+      <div class="contact">
+
+        <div class="section-label">
+          04 / Contact
         </div>
-        <div class="timeline-item">
-          <div class="t-when">along the way</div>
-          <div class="t-what">Java &amp; Kotlin</div>
-          <div class="t-detail">Picked up both to extend past what Skript alone could do.</div>
-        </div>
-        <div class="timeline-item">
-          <div class="t-when">2+ years ago</div>
-          <div class="t-what">Started with Skript</div>
-          <div class="t-detail">Began scripting fixes and utilities for servers I played on — the habit stuck.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
 
-<section class="contact" id="contact">
-  <div class="wrap">
-    <span class="section-tag">§a get in touch</span>
-    <h2>Got a server that needs staff tools, an event system, or a plugin built right?</h2>
-    <p>I'm open to freelance builds and full-stack work. Send a message and let's talk about what you need.</p>
-    <div class="contact-links">
-      <button type="button" class="btn btn-primary btn-copy" data-copy="YashiDevelopment@Outlook.com">✉ YashiDevelopment@Outlook.com</button>
-      <button type="button" class="btn btn-ghost btn-copy" data-copy="kettehdevelopment">Discord — kettehdevelopment</button>
-      <a href="#" class="btn btn-ghost">GitHub</a>
+        <h2>Let's build something.</h2>
+
+        <p>
+          Looking for a developer for a Discord bot,
+          backend system, full-stack project or server
+          infrastructure? Get in touch.
+        </p>
+
+        <div class="buttons">
+
+          <a
+            class="button primary"
+            href="https://discord.gg/prestigetiers"
+            target="_blank"
+          >
+            Contact Me on Discord
+          </a>
+
+        </div>
+
+      </div>
+
     </div>
-    <span class="copy-hint">click to copy</span>
-  </div>
-</section>
+
+  </section>
+
+</main>
+
 
 <footer>
-  ketteh.dev — built with Java, Kotlin &amp; Skript. no frameworks were harmed.
+  © 2026 Vodzy — Full-Stack Developer & Sysadmin
 </footer>
 
-<script>
-(function(){
-  const lines = [
-    {type:'cmd', text:'/startkoth'},
-    {type:'out', spans:[['a','the king of the hill has begun! ']]},
-    {type:'out', spans:[['a','capture the point to win!']]},
-    {type:'cmd', text:'/exv'},
-    {type:'out', spans:[['8','[eVanish] '],['d','You are now invisible to other players.']]},
-    {type:'cmd', text:'/punish Notch'},
-    {type:'out', spans:[['7','» opening staff punishment menu...']]},
-    {type:'cmd', text:'/cmdspy on'},
-    {type:'out', spans:[['8','[STAFF] '],['a','CmdSpy has been Enabled.']]},
-    {type:'cmd', text:'/riskscore Notch'},
-    {type:'out', spans:[['e','risk score: '],['c','low']]},
-  ];
-
-  const body = document.getElementById('consoleBody');
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  function renderStatic(){
-    body.innerHTML = lines.map(l=>{
-      if(l.type==='cmd'){
-        return `<div class="console-line show"><span class="cmd-in">${l.text}</span></div>`;
-      }
-      const spans = l.spans.map(([c,t])=>`<span class="mc-${c}">${t}</span>`).join('');
-      return `<div class="console-line show"><span class="out">${spans}</span></div>`;
-    }).join('');
-  }
-
-  if(reduceMotion){
-    renderStatic();
-    return;
-  }
-
-  let i = 0;
-  function typeCmd(el, text, cb){
-    let c = 0;
-    const span = document.createElement('span');
-    span.className = 'cmd-in';
-    el.appendChild(span);
-    const cursor = document.createElement('span');
-    cursor.className = 'cursor';
-    el.appendChild(cursor);
-    const iv = setInterval(()=>{
-      span.textContent = text.slice(0,c+1);
-      c++;
-      if(c>=text.length){
-        clearInterval(iv);
-        cursor.remove();
-        setTimeout(cb, 260);
-      }
-    }, 38);
-  }
-
-  function showOut(l, cb){
-    const line = document.createElement('div');
-    line.className = 'console-line';
-    const span = document.createElement('span');
-    span.className = 'out';
-    span.innerHTML = l.spans.map(([c,t])=>`<span class="mc-${c}">${t}</span>`).join('');
-    line.appendChild(span);
-    body.appendChild(line);
-    requestAnimationFrame(()=> line.classList.add('show'));
-    setTimeout(cb, 420);
-  }
-
-  function step(){
-    if(i >= lines.length){
-      setTimeout(()=>{
-        body.innerHTML = '';
-        i = 0;
-        step();
-      }, 2600);
-      return;
-    }
-    const l = lines[i];
-    i++;
-    if(l.type==='cmd'){
-      const line = document.createElement('div');
-      line.className = 'console-line show';
-      body.appendChild(line);
-      typeCmd(line, l.text, step);
-    } else {
-      showOut(l, step);
-    }
-  }
-
-  step();
-})();
-
-(function(){
-  document.querySelectorAll('.btn-copy').forEach(function(btn){
-    const original = btn.textContent;
-    btn.addEventListener('click', function(){
-      const text = btn.getAttribute('data-copy');
-
-      function fallbackCopy(str){
-        const ta = document.createElement('textarea');
-        ta.value = str;
-        ta.style.position = 'fixed';
-        ta.style.opacity = '0';
-        document.body.appendChild(ta);
-        ta.focus();
-        ta.select();
-        try{ document.execCommand('copy'); }catch(e){}
-        document.body.removeChild(ta);
-      }
-
-      function done(){
-        btn.textContent = '✓ Copied!';
-        btn.disabled = true;
-        setTimeout(function(){
-          btn.textContent = original;
-          btn.disabled = false;
-        }, 1600);
-      }
-
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText(text).then(done).catch(function(){
-          fallbackCopy(text);
-          done();
-        });
-      } else {
-        fallbackCopy(text);
-        done();
-      }
-    });
-  });
-})();
-</script>
 
 </body>
 </html>
