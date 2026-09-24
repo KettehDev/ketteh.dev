@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ketteh — dev & design</title>
+<title>ketteh — dev & bot builder</title>
+<meta name="description" content="KettehDev — JavaScript, C++, C#, Skript developer. Bot development and clean code.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Archivo:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -20,7 +21,7 @@
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="left">
-      <span><span class="dot"></span>Available · 2 slots</span>
+      <span class="status-pill"><span class="dot"></span>Available · 2 slots</span>
       <span>Based in · The Internet</span>
     </div>
     <div class="right">
@@ -49,21 +50,21 @@
       </svg>
     </div>
 
-    <h1 class="name" id="name">
+    <h1 class="name glitch" id="name" data-text="ketteh">
       <span class="outline">ketteh</span><span class="accent">.</span><br>
-      <span class="serif">makes things</span>
+      <span class="serif">builds bots</span>
     </h1>
 
     <div class="hero-sub">
       <p>
         I build software that feels like it was made by a human — because it was. 
-        Interfaces, tools, small games, <span class="ital">weird experiments</span>. 
+        Bots, tools, small games, <span class="ital">weird experiments</span>. 
         No templates, no bullshit, just careful work that ships.
       </p>
       <div>
         <div class="hero-meta">
-          <div class="row"><span>Role</span><span>Dev / Design</span></div>
-          <div class="row"><span>Focus</span><span>Web · Tools · Games</span></div>
+          <div class="row"><span>Role</span><span>Dev · Bot Builder</span></div>
+          <div class="row"><span>Stack</span><span>JS · C++ · C# · Skript</span></div>
           <div class="row"><span>Status</span><span>Open · 2 slots</span></div>
           <div class="row"><span>Response</span><span>&lt; 24 hours</span></div>
         </div>
@@ -98,17 +99,17 @@
 <!-- MARQUEE -->
 <div class="marquee">
   <div class="marquee-track">
-    <span>Web apps <span class="ital">&amp;</span> interfaces</span>
+    <span>Bot development <span class="ital">&amp;</span> automation</span>
     <span class="star">✺</span>
-    <span>Tools <span class="ital">that</span> actually work</span>
+    <span>JavaScript <span class="ital">·</span> C++ <span class="ital">·</span> C#</span>
     <span class="star">✺</span>
-    <span>Small <span class="ital">weird</span> games</span>
+    <span>Clean code <span class="ital">that</span> ships</span>
     <span class="star">✺</span>
-    <span>Web apps <span class="ital">&amp;</span> interfaces</span>
+    <span>Bot development <span class="ital">&amp;</span> automation</span>
     <span class="star">✺</span>
-    <span>Tools <span class="ital">that</span> actually work</span>
+    <span>JavaScript <span class="ital">·</span> C++ <span class="ital">·</span> C#</span>
     <span class="star">✺</span>
-    <span>Small <span class="ital">weird</span> games</span>
+    <span>Clean code <span class="ital">that</span> ships</span>
     <span class="star">✺</span>
   </div>
 </div>
@@ -121,24 +122,24 @@
 
       <div class="work-item">
         <div class="work-num">01</div>
-        <div class="work-title">Nova <span class="serif">UI Kit</span></div>
-        <div class="work-cat">Design system</div>
+        <div class="work-title">Discord <span class="serif">Bot Suite</span></div>
+        <div class="work-cat">Moderation · automation</div>
         <div class="work-year">2025</div>
         <div class="work-arrow">↗</div>
       </div>
 
       <div class="work-item">
         <div class="work-num">02</div>
-        <div class="work-title">Pulse <span class="serif">Analytics</span></div>
-        <div class="work-cat">Full-stack dashboard</div>
+        <div class="work-title">Minecraft <span class="serif">Skript Pack</span></div>
+        <div class="work-cat">Skript · automation</div>
         <div class="work-year">2025</div>
         <div class="work-arrow">↗</div>
       </div>
 
       <div class="work-item">
         <div class="work-num">03</div>
-        <div class="work-title">Echo <span class="serif">Social</span></div>
-        <div class="work-cat">Mobile · voice-first</div>
+        <div class="work-title">Automation <span class="serif">Toolkit</span></div>
+        <div class="work-cat">Node.js · CLI</div>
         <div class="work-year">2024</div>
         <div class="work-arrow">↗</div>
       </div>
@@ -146,23 +147,23 @@
       <div class="work-item">
         <div class="work-num">04</div>
         <div class="work-title">Sentinel <span class="serif">Toolkit</span></div>
-        <div class="work-cat">Open-source security</div>
+        <div class="work-cat">Open-source · C#</div>
         <div class="work-year">2024</div>
         <div class="work-arrow">↗</div>
       </div>
 
       <div class="work-item">
         <div class="work-num">05</div>
-        <div class="work-title">Lumina <span class="serif">CSS</span></div>
-        <div class="work-cat">Utility framework</div>
+        <div class="work-title">Web <span class="serif">Experiments</span></div>
+        <div class="work-cat">CSS · JS · motion</div>
         <div class="work-year">2023</div>
         <div class="work-arrow">↗</div>
       </div>
 
       <div class="work-item">
         <div class="work-num">06</div>
-        <div class="work-title">Neon <span class="serif">Drift</span></div>
-        <div class="work-cat">Browser game</div>
+        <div class="work-title">Native <span class="serif">Tools</span></div>
+        <div class="work-cat">C++ · systems</div>
         <div class="work-year">2023</div>
         <div class="work-arrow">↗</div>
       </div>
@@ -177,10 +178,9 @@
       <div>
         <h2>About <span class="serif">me,</span><br>briefly <span class="acc">→</span></h2>
         <p>
-          I've been writing code since I was thirteen and breaking things since before that. 
-          These days I mostly build web apps, dev tools, and the occasional game. 
-          I care a lot about <span class="squiggle">craft</span> — the kind of detail 
-          most people don't notice but everyone feels.
+          I'm a developer who works across JavaScript, C++, C#, and Skript — with a 
+          heavy focus on <span class="squiggle">bot development</span>. I build tools 
+          that work, keep things clean, and don't ship anything that isn't ready.
         </p>
         <p>
           I work solo, on purpose. Small scope, big polish. If something isn't 
@@ -188,11 +188,11 @@
         </p>
 
         <ul class="stack-list">
-          <li><span>Languages</span><span>TS · Python · Rust · Lua</span></li>
-          <li><span>Frameworks</span><span>React · Next · Svelte</span></li>
-          <li><span>Design</span><span>Figma · Motion · Type</span></li>
-          <li><span>Backend</span><span>Node · Postgres · Redis</span></li>
-          <li><span>Vibes</span><span>Lo-fi · Black coffee</span></li>
+          <li><span>Languages</span><span>JavaScript · C++ · C#</span></li>
+          <li><span>Web</span><span>CSS · HTML</span></li>
+          <li><span>Scripting</span><span>Skript · Node.js</span></li>
+          <li><span>Focus</span><span>Bot Development</span></li>
+          <li><span>GitHub</span><span>@KettehDev</span></li>
         </ul>
 
         <div class="signature">— ketteh</div>
@@ -205,9 +205,30 @@
           <div class="photo-caption">"Still debugging. Still caffeinated."</div>
         </div>
 
+        <div class="terminal-card">
+          <div class="terminal-bar">
+            <span class="t-dot t-red"></span>
+            <span class="t-dot t-yellow"></span>
+            <span class="t-dot t-green"></span>
+            <span class="t-title">~/kettehdev</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="t-prompt">$</span> whoami</div>
+            <div class="t-out">kettehdev</div>
+            <div><span class="t-prompt">$</span> stack --list</div>
+            <div class="t-out">→ JavaScript</div>
+            <div class="t-out">→ C++</div>
+            <div class="t-out">→ C#</div>
+            <div class="t-out">→ Skript</div>
+            <div><span class="t-prompt">$</span> focus</div>
+            <div class="t-out accent">→ bot development</div>
+            <div><span class="t-prompt">$</span> <span class="t-cursor">▊</span></div>
+          </div>
+        </div>
+
         <div class="mini-card">
           <span>Currently building</span>
-          <b>something cool →</b>
+          <b>bots & tools →</b>
         </div>
       </div>
 
@@ -223,17 +244,17 @@
           <span>hey@ketteh.dev</span>
           <span class="arrow">→</span>
         </a>
-        <a href="#">
-          <span>GitHub</span>
-          <span class="arrow">→</span>
+        <a href="https://github.com/KettehDev" target="_blank" rel="noopener">
+          <span>GitHub · @KettehDev</span>
+          <span class="arrow">↗</span>
         </a>
-        <a href="#">
-          <span>Twitter / X</span>
-          <span class="arrow">→</span>
+        <a href="https://discord.gg/qFXsGMWWZ" target="_blank" rel="noopener">
+          <span>Discord</span>
+          <span class="arrow">↗</span>
         </a>
-        <a href="#">
-          <span>Read.cv</span>
-          <span class="arrow">→</span>
+        <a href="https://nohello.net" target="_blank" rel="noopener">
+          <span>Read this first</span>
+          <span class="arrow">↗</span>
         </a>
       </div>
     </div>
@@ -241,7 +262,14 @@
 
   <footer class="footer">
     <div class="sig">ketteh © 2026 — made by hand</div>
-    <div>No cookies · No trackers · Just code</div>
+    <div class="built-with">
+      <span>Built with</span>
+      <span class="chip">JavaScript</span>
+      <span class="chip">C++</span>
+      <span class="chip">C#</span>
+      <span class="chip">Skript</span>
+      <span class="chip">CSS</span>
+    </div>
   </footer>
 
 </div>
