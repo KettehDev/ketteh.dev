@@ -1,0 +1,667 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ketteh.dev</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Literata:ital,opsz,wght@0,7..72,400;0,7..72,600;1,7..72,400&family=Silkscreen&family=VT323&display=swap">
+<style>
+/* layout: a hand-made single column homepage on a rainy night; the inventory is the one loud object */
+:root {
+  --bg: #f4f5f3;
+  --fg: #1d1e1c;
+  --muted: #676a66;
+  --line: #dcdedb;
+  --link: #2149c4;
+  --link-visited: #6a3fb0;
+  --grass: #4f8a2c;
+  --rain: 60, 80, 110;
+  --body: "Literata", Georgia, "Times New Roman", serif;
+  --pixel: "Silkscreen", ui-monospace, Menlo, monospace;
+  --mc: "VT323", ui-monospace, Menlo, monospace;
+  /* minecraft GUI colors stay the same in both themes, like the game */
+  --gui: #c6c6c6; --gui-hi: #ffffff; --gui-lo: #555555; --gui-edge: #000000;
+  --slot: #8b8b8b; --slot-lo: #373737; --slot-hi: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121418; --fg: #e6e7e3; --muted: #959a99; --line: #262a30;
+    --link: #8db1ff; --link-visited: #c3a6f4; --grass: #7cc24b; --rain: 170, 190, 220; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121418; --fg: #e6e7e3; --muted: #959a99; --line: #262a30;
+  --link: #8db1ff; --link-visited: #c3a6f4; --grass: #7cc24b; --rain: 170, 190, 220; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 17px;
+  line-height: 1.65;
+  padding-inline: 20px;
+  padding-block: 56px 96px;
+}
+#rain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0; transition: opacity 2.5s ease; }
+#rain.on { opacity: 1; }
+.page { position: relative; z-index: 1; max-width: 640px; margin: 0 auto; }
+a { color: var(--link); text-underline-offset: 2px; }
+a:visited { color: var(--link-visited); }
+a:focus-visible, button:focus-visible { outline: 2px dashed var(--link); outline-offset: 3px; }
+p { margin: 0 0 1em; }
+.textbtn {
+  font: inherit; color: var(--link); background: none; border: 0; padding: 0; cursor: pointer;
+  text-decoration: underline; text-underline-offset: 2px;
+}
+
+/* header */
+header { display: flex; gap: 20px; align-items: center; margin-bottom: 44px; }
+.headbox { width: 80px; height: 80px; flex: none; position: relative; }
+#head { width: 100%; height: 100%; image-rendering: pixelated; display: block; filter: drop-shadow(4px 4px 0 rgba(0,0,0,.18)); }
+.who { min-width: 0; }
+.name { font-family: var(--pixel); font-size: 34px; line-height: 1; margin: 0 0 8px; letter-spacing: .02em; }
+.name small { font-size: 12px; color: var(--grass); vertical-align: top; margin-left: 6px; letter-spacing: 0; }
+.tagline { margin: 0; color: var(--muted); font-size: 15px; }
+.tools { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-top: 8px; font-size: 15px; align-items: baseline; }
+.eq { display: inline-flex; gap: 2px; align-items: flex-end; height: 11px; margin-right: 6px; vertical-align: -1px; }
+.eq i { width: 2px; background: currentColor; height: 3px; }
+.playing .eq i { animation: eq 1.2s ease-in-out infinite; }
+.playing .eq i:nth-child(2) { animation-delay: -.4s; }
+.playing .eq i:nth-child(3) { animation-delay: -.8s; }
+@keyframes eq { 0%,100% { height: 3px; } 50% { height: 11px; } }
+
+h2 {
+  font-family: var(--pixel); font-weight: 400; font-size: 14px; letter-spacing: .04em;
+  margin: 52px 0 14px; color: var(--muted);
+}
+h2::before { content: "> "; color: var(--grass); }
+
+.make { margin: 0; }
+.make dt { font-weight: 600; }
+.make dd { margin: 0 0 14px; color: var(--muted); }
+
+/* ---------- minecraft inventory ---------- */
+.inv-wrap { overflow-x: auto; padding-block: 2px 6px; }
+.inv {
+  display: inline-block; background: var(--gui); padding: 8px 8px 9px;
+  border-radius: 3px;
+  box-shadow:
+    inset 2px 2px 0 var(--gui-hi), inset -2px -2px 0 var(--gui-lo),
+    0 0 0 2px var(--gui-edge);
+  margin: 2px;
+  font-family: var(--mc);
+}
+.inv-title { font-size: 20px; color: #3f3f3f; line-height: 1; margin: 0 0 6px 1px; }
+.grid { display: grid; grid-template-columns: repeat(9, 36px); }
+.grid + .grid { margin-top: 8px; }
+.slot {
+  position: relative; width: 36px; height: 36px; border: 0; margin: 0; padding: 0;
+  background: var(--slot);
+  box-shadow: inset 2px 2px 0 var(--slot-lo), inset -2px -2px 0 var(--slot-hi);
+  display: grid; place-items: center; cursor: pointer;
+}
+.slot::after { content: ""; position: absolute; inset: 2px; background: #fff; opacity: 0; }
+.slot:hover::after, .slot:focus-visible::after { opacity: .45; }
+.slot:focus-visible { outline: none; }
+.slot canvas { width: 32px; height: 32px; image-rendering: pixelated; display: block; position: relative; z-index: 1; }
+.slot .count {
+  position: absolute; right: 1px; bottom: -3px; z-index: 2; font-family: var(--mc); font-size: 20px; line-height: 1;
+  color: #fff; text-shadow: 2px 2px 0 #3f3f3f;
+}
+.slot.glint canvas { animation: glint 3s linear infinite; }
+@keyframes glint { 0%,100% { filter: drop-shadow(0 0 0 #c46cff) brightness(1); } 50% { filter: drop-shadow(0 0 3px #c46cff) brightness(1.25) hue-rotate(20deg); } }
+.hotbar .slot.sel { box-shadow: inset 2px 2px 0 var(--slot-lo), inset -2px -2px 0 var(--slot-hi), 0 0 0 2px #fff, 0 0 0 4px #000; z-index: 2; }
+
+.tooltip {
+  position: fixed; z-index: 50; pointer-events: none;
+  background: rgba(16, 0, 16, .94); color: #fff; padding: 4px 8px 6px;
+  font-family: var(--mc); font-size: 20px; line-height: 1.05; white-space: nowrap;
+  border: 2px solid; border-image: linear-gradient(#5000ff, #28007f) 1;
+  box-shadow: 0 0 0 2px rgba(16, 0, 16, .94);
+}
+.tooltip .lore { color: #a8a8a8; display: block; }
+.tooltip .hint { color: #555; display: block; }
+.inv-note { font-size: 14px; color: var(--muted); margin-top: 10px; }
+
+.contact { list-style: none; padding: 0; margin: 0; }
+.contact li { display: flex; gap: 10px; flex-wrap: wrap; align-items: baseline; }
+.contact b { font-weight: 400; color: var(--muted); min-width: 80px; }
+.small { color: var(--muted); font-size: 15px; }
+
+
+/* coffee */
+.coffee { margin-top: 8px; }
+.coffee-btn {
+  font-family: var(--mc); font-size: 22px; line-height: 1; cursor: pointer;
+  color: #fff; text-shadow: 2px 2px 0 #3f3f3f; padding: 9px 16px 11px;
+  background: #6f6f6f; border: 2px solid #000;
+  box-shadow: inset 2px 2px 0 #aaaaaa, inset -2px -3px 0 #4a4a4a;
+}
+.coffee-btn:hover { background: #7f8bcf; box-shadow: inset 2px 2px 0 #b9c3ff, inset -2px -3px 0 #4c5690; color: #ffffa0; }
+.coffee-box { margin-top: 14px; padding: 14px 16px; border: 1px dashed var(--line); background: color-mix(in srgb, var(--fg) 3%, var(--bg)); }
+.coffee-box p { margin: 0 0 10px; }
+.addr { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.addr code { font-family: var(--mc); font-size: 20px; word-break: break-all; min-width: 0; user-select: all; }
+.coffee-box .small { margin: 10px 0 0; }
+
+footer { margin-top: 64px; padding-top: 16px; border-top: 1px dashed var(--line); font-size: 14px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 18px; }
+
+/* terms */
+.terms h1 { font-family: var(--pixel); font-weight: 400; font-size: 26px; margin: 0 0 6px; }
+.terms h3 { font-size: 17px; margin: 30px 0 6px; }
+.terms h3 span { font-family: var(--pixel); font-size: 12px; color: var(--grass); margin-right: 8px; font-weight: 400; }
+.terms ul { padding-left: 1.2em; margin: 0 0 1em; }
+.terms li { margin-bottom: 4px; }
+.back { display: inline-block; margin-bottom: 28px; font-size: 15px; }
+
+@media (max-width: 520px) {
+  body { font-size: 16px; padding-block: 32px 72px; }
+  header { align-items: flex-start; gap: 16px; }
+  .headbox { width: 60px; height: 60px; }
+  .name { font-size: 26px; }
+  .grid { grid-template-columns: repeat(9, 32px); }
+  .slot { width: 32px; height: 32px; }
+  .slot canvas { width: 28px; height: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .playing .eq i, .slot.glint canvas { animation: none; }
+}
+</style>
+
+<canvas id="rain" aria-hidden="true"></canvas>
+
+<div class="page">
+  <header>
+    <div class="headbox"><canvas id="head" width="8" height="8" role="img" aria-label="ketteh's Minecraft head"></canvas></div>
+    <div class="who">
+      <h1 class="name">ketteh<small>2y</small></h1>
+      <p class="tagline">full stack dev. minecraft plugins, mods and skripts.</p>
+      <div class="tools">
+        <button class="textbtn" id="play"><span class="eq" aria-hidden="true"><i></i><i></i><i></i></span><span id="playlabel">play rain</span></button>
+        <a href="https://github.com/KettehDev" target="_blank" rel="noopener">github</a>
+        <a href="#terms">terms</a>
+        <a href="#coffee">buy me a coffee</a>
+      </div>
+    </div>
+  </header>
+
+  <div id="home">
+    <p>hey, I'm ketteh. I've been programming for about two years, mostly for Minecraft. I write plugins and mods, and a lot of Skript when a server needs something quick.</p>
+    <p>Outside of that I do full stack web stuff and write tools in C#, C++ and Python. I like small, tidy code that does exactly what it says.</p>
+
+    <h2>what I make</h2>
+    <dl class="make">
+      <dt>Minecraft plugins</dt>
+      <dd>Custom features, commands, economies and admin tools for servers.</dd>
+      <dt>Mods</dt>
+      <dd>New items and mechanics that change the game itself, not just the server.</dd>
+      <dt>Skripts</dt>
+      <dd>Quick server features: menus, cooldowns, custom drops, events.</dd>
+      <dt>Websites and web apps</dt>
+      <dd>Front end, back end and the database in between.</dd>
+      <dt>Tools</dt>
+      <dd>Desktop programs and automation in C#, C++ and Python.</dd>
+    </dl>
+
+    <h2>inventory</h2>
+    <div class="inv-wrap">
+      <div class="inv" id="inv">
+        <div class="inv-title">Inventory</div>
+        <div class="grid" id="storage"></div>
+        <div class="grid hotbar" id="hotbar"></div>
+      </div>
+    </div>
+    <p class="inv-note">hover the items. scroll or press 1–9 to move the hotbar.</p>
+
+    <h2 id="contact">contact</h2>
+    <ul class="contact">
+      <li><b>discord</b><button class="textbtn" id="copyDiscord">zoe_mahhh</button><span class="small" id="copied" hidden>copied</span></li>
+      <li><b>github</b><a href="https://github.com/KettehDev" target="_blank" rel="noopener">github.com/KettehDev</a></li>
+    </ul>
+    <p class="small" style="margin-top:14px">Commissions are open. Put what you need in your first message, and read the <a href="#terms">terms</a> before you order.</p>
+
+    <h2 id="coffee">buy me a coffee</h2>
+    <p>Coffee is basically what keeps the plugins coming. If something I made helped you out, you can send a little LTC my way. Totally optional, always appreciated.</p>
+    <div class="coffee">
+      <button class="coffee-btn" id="coffeeBtn" aria-expanded="false" aria-controls="coffeeBox">Buy me a coffee</button>
+      <div class="coffee-box" id="coffeeBox" hidden>
+        <p>Thank you! Here's my Litecoin address:</p>
+        <div class="addr">
+          <code id="ltc">LSEVCYVTo3E4WPkBADJGZfiRNZ8PraKU29</code>
+          <button class="textbtn" id="copyLtc">copy</button>
+        </div>
+        <p class="small">Litecoin (LTC) only. Coins sent from another network can't be recovered.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="terms" class="terms" hidden>
+    <a class="back" href="#">← back</a>
+    <h1>terms of service</h1>
+    <p class="small">For commissions from ketteh. Last updated October 9, 2026.</p>
+    <p>By ordering anything from me you agree to these terms. If something here doesn't work for you, ask before we start.</p>
+
+    <h3><span>01</span>Starting a commission</h3>
+    <ul>
+      <li>Tell me what you want in as much detail as you can: features, Minecraft or server version, and any plugins it has to work with.</li>
+      <li>I'll give you a price and a rough time estimate. Work starts after you accept and pay the deposit.</li>
+      <li>I can turn down any request.</li>
+    </ul>
+
+    <h3><span>02</span>Payment</h3>
+    <ul>
+      <li>50% up front, 50% when the work is done and before I send the final files. Small jobs may be paid in full up front.</li>
+      <li>Prices are fixed once agreed. New features added later are quoted separately.</li>
+    </ul>
+
+    <h3><span>03</span>Refunds</h3>
+    <ul>
+      <li>Full refund if I haven't started yet, or if I can't finish the project.</li>
+      <li>Once work has started, the deposit is non-refundable.</li>
+      <li>No refunds after the final files are delivered.</li>
+    </ul>
+
+    <h3><span>04</span>Revisions</h3>
+    <ul>
+      <li>Two rounds of small changes are included, as long as they fit the original request.</li>
+      <li>Anything bigger than that counts as new work and gets its own price.</li>
+    </ul>
+
+    <h3><span>05</span>Delivery and timing</h3>
+    <ul>
+      <li>Time estimates are estimates. If something takes longer, I'll tell you.</li>
+      <li>You'll get the files (jar, skript, or source, as agreed) once the final payment is in.</li>
+    </ul>
+
+    <h3><span>06</span>Bugs and support</h3>
+    <ul>
+      <li>Bugs in my code are fixed for free for 14 days after delivery.</li>
+      <li>I'm not responsible for problems caused by Minecraft or server updates, other plugins, or changes someone else makes to the code. I can help with those as paid work.</li>
+    </ul>
+
+    <h3><span>07</span>Who owns what</h3>
+    <ul>
+      <li>You can use what you paid for on your own servers and projects.</li>
+      <li>You can't resell or publicly re-upload it unless we agree on that first.</li>
+      <li>I may reuse general code and techniques in other projects. I won't hand out your specific project.</li>
+      <li>I might show the work in my portfolio, but only if you say that's okay.</li>
+    </ul>
+
+    <h3><span>08</span>What I won't make</h3>
+    <ul>
+      <li>Cheats, hacked clients, malware, token grabbers, or anything that steals data.</li>
+      <li>Anything that breaks the Minecraft EULA, Discord's terms, or the law.</li>
+    </ul>
+
+    <h3><span>09</span>Chargebacks</h3>
+    <p>Opening a chargeback or payment dispute instead of talking to me first ends the commission. Your right to use the work ends with it, and I won't take future orders from you.</p>
+
+    <h3><span>10</span>Changes</h3>
+    <p>I can update these terms. The version that applies is the one posted when you paid your deposit.</p>
+
+    <p class="small" style="margin-top:28px">Questions? Message <b>zoe_mahhh</b> on Discord.</p>
+  </div>
+
+  <footer>
+    <span>© 2026 ketteh</span>
+    <span>last updated october 2026</span>
+    <span>rain is generated live in your browser</span>
+  </footer>
+</div>
+
+<div class="tooltip" id="tooltip" hidden></div>
+
+<script>
+// ================= views (home / terms) =================
+const home = document.getElementById('home'), terms = document.getElementById('terms');
+function route() {
+  const t = location.hash === '#terms';
+  terms.hidden = !t; home.hidden = t;
+  if (t) scrollTo(0, 0);
+}
+addEventListener('hashchange', route); route();
+
+// ================= head =================
+// Placeholder head until the real skin PNG is added.
+// To use a skin: set SKIN to a data:image/png URL; the face (8,8) and hat layer (40,8) are drawn.
+const SKIN = null;
+const headCtx = document.getElementById('head').getContext('2d');
+if (SKIN) {
+  const img = new Image();
+  img.onload = () => { headCtx.drawImage(img, 8, 8, 8, 8, 0, 0, 8, 8); headCtx.drawImage(img, 40, 8, 8, 8, 0, 0, 8, 8); };
+  img.src = SKIN;
+} else {
+  const face = ["o......o", "oo....oo", "oossoooo", "oweooweo", "oooooooo", "ooopPooo", "oooooooo", ".oooooo."];
+  const pal = { o: "#e08a3a", s: "#c76f2a", w: "#ffffff", e: "#1d1d1b", p: "#f2a3b3", P: "#e98a9e" };
+  face.forEach((row, y) => [...row].forEach((c, x) => { if (pal[c]) { headCtx.fillStyle = pal[c]; headCtx.fillRect(x, y, 1, 1); } }));
+}
+
+// ================= pixel item icons (16x16, drawn in code) =================
+function icon(draw) {
+  const g = Array.from({ length: 16 }, () => Array(16).fill(null));
+  const px = (x, y, c) => { if (x >= 0 && x < 16 && y >= 0 && y < 16) g[y][x] = c; };
+  const rect = (x, y, w, h, c) => { for (let j = y; j < y + h; j++) for (let i = x; i < x + w; i++) px(i, j, c); };
+  const circ = (cx, cy, r, c) => { for (let j = 0; j < 16; j++) for (let i = 0; i < 16; i++) if ((i + .5 - cx) ** 2 + (j + .5 - cy) ** 2 <= r * r) px(i, j, c); };
+  draw({ px, rect, circ, g });
+  const cv = document.createElement('canvas'); cv.width = cv.height = 16;
+  const c = cv.getContext('2d');
+  const shade = (hex, f) => {
+    const n = parseInt(hex.slice(1), 16), ch = [n >> 16, (n >> 8) & 255, n & 255].map(v => Math.max(0, Math.min(255, Math.round(f > 0 ? v + (255 - v) * f : v * (1 + f)))));
+    return `rgb(${ch.join(',')})`;
+  };
+  for (let y = 0; y < 16; y++) for (let x = 0; x < 16; x++) {
+    const col = g[y][x];
+    if (col) {
+      const up = y > 0 && g[y - 1][x], left = x > 0 && g[y][x - 1], down = y < 15 && g[y + 1][x], right = x < 15 && g[y][x + 1];
+      let f = 0;
+      if (!up || !left) f = 0.28; else if (!down || !right) f = -0.28;
+      c.fillStyle = col.startsWith('#') ? shade(col, f) : col;
+      c.fillRect(x, y, 1, 1);
+    } else {
+      // dark outline around the item, the way minecraft items read
+      const n = [[0, -1], [0, 1], [-1, 0], [1, 0]].find(([dx, dy]) => g[y + dy] && g[y + dy][x + dx]);
+      if (n) { const nc = g[y + n[1]][x + n[0]]; c.fillStyle = nc.startsWith('#') ? shade(nc, -0.68) : '#222'; c.fillRect(x, y, 1, 1); }
+    }
+  }
+  return cv;
+}
+
+const ICONS = {
+  plugin: () => icon(({ rect, circ }) => {     // puzzle piece
+    rect(3, 5, 9, 8, '#e8913a'); circ(7.5, 4, 2, '#e8913a'); circ(12.5, 9, 2, '#e8913a');
+  }),
+  book: () => icon(({ rect }) => {             // enchanted book
+    rect(3, 2, 9, 12, '#7a3fb5'); rect(12, 3, 1, 10, '#f1ead8'); rect(3, 6, 9, 2, '#e9c04a'); rect(6, 9, 3, 2, '#c99cf0');
+  }),
+  scroll: () => icon(({ rect }) => {           // skript paper
+    rect(4, 3, 8, 10, '#f2ebd3'); rect(3, 2, 10, 2, '#d8c99e'); rect(3, 12, 10, 2, '#d8c99e');
+    for (const y of [5, 7, 9]) rect(5, y, y === 9 ? 4 : 6, 1, '#8c7f62');
+  }),
+  globe: () => icon(({ circ, rect }) => {      // web
+    circ(8, 8, 6, '#3c7fd8'); rect(4, 5, 3, 3, '#5dbb46'); rect(9, 8, 3, 4, '#5dbb46'); rect(6, 10, 2, 2, '#5dbb46'); rect(9, 4, 2, 1, '#5dbb46');
+  }),
+  gem: (c1, c2) => () => icon(({ px }) => {    // diamond-shaped gem
+    for (let y = 2; y < 14; y++) for (let x = 2; x < 14; x++) if (Math.abs(x - 7.5) + Math.abs(y - 7.5) <= 6) px(x, y, (x + y) % 5 === 0 ? c2 : c1);
+  }),
+  ingot: (c1) => () => icon(({ rect }) => {
+    rect(3, 7, 10, 4, c1); rect(4, 6, 8, 1, c1); rect(5, 5, 6, 1, c1);
+  }),
+  snake: () => icon(({ rect }) => {            // python
+    rect(4, 2, 7, 3, '#3f74b5'); rect(4, 5, 3, 3, '#3f74b5'); rect(4, 7, 7, 2, '#3f74b5');
+    rect(9, 8, 3, 3, '#f0c93c'); rect(5, 11, 7, 3, '#f0c93c'); rect(9, 3, 1, 1, '#ffffff');
+  }),
+  mug: () => icon(({ rect }) => {              // coffee
+    rect(3, 6, 8, 8, '#e9e4dc'); rect(11, 8, 2, 4, '#e9e4dc'); rect(4, 6, 6, 2, '#6b4127');
+    rect(5, 2, 1, 3, '#c9c9c9'); rect(8, 1, 1, 3, '#c9c9c9');
+  }),
+  xp: () => icon(({ rect, circ }) => {         // bottle o' enchanting
+    circ(8, 10, 4.6, '#a5e05a'); rect(7, 3, 3, 3, '#cfe9f2'); rect(6, 2, 5, 1, '#9b6b3e'); rect(6, 8, 2, 2, '#e7ffb8');
+  }),
+  quill: () => icon(({ rect, px }) => {        // book and quill
+    rect(2, 5, 9, 9, '#8a5a32'); rect(10, 6, 1, 7, '#f1ead8');
+    for (let i = 0; i < 7; i++) { px(8 + i, 9 - i, '#f4f4f4'); px(9 + i, 9 - i, '#dcdcdc'); }
+  }),
+  clock: () => icon(({ circ, rect }) => {
+    circ(8, 8, 6, '#e9c04a'); circ(8, 8, 4.2, '#f7f1d8'); rect(8, 5, 1, 4, '#333333'); rect(8, 8, 3, 1, '#c0392b');
+  }),
+  bug: () => icon(({ circ, rect }) => {        // beetle
+    circ(8, 9, 4.5, '#b8312f'); rect(8, 5, 1, 8, '#3a1414'); circ(8, 4, 2.2, '#2c2c2c'); circ(6, 8, 0.9, '#2c2c2c'); circ(10, 11, 0.9, '#2c2c2c');
+  }),
+  bed: () => icon(({ rect }) => {
+    rect(2, 7, 12, 4, '#c0392b'); rect(2, 6, 4, 2, '#f1f1f1'); rect(2, 11, 1, 3, '#8a5a32'); rect(13, 11, 1, 3, '#8a5a32');
+  }),
+};
+
+// name colors follow minecraft's text colors
+const C = { white: '#ffffff', aqua: '#55ffff', yellow: '#ffff55', pink: '#ff55ff', green: '#55ff55', gold: '#ffaa00', gray: '#aaaaaa' };
+
+const hotbarItems = [
+  { i: 'plugin', name: 'Plugins', color: C.yellow, lore: ['Custom server features,', 'commands and economies'] },
+  { i: 'book', name: 'Mods', color: C.aqua, glint: true, lore: ['Enchanted: Game Changing V'] },
+  { i: 'scroll', name: 'Skript', color: C.white, count: 64, lore: ['Quick server features'] },
+  { i: 'globe', name: 'Full Stack Web', color: C.green, lore: ['Front end, back end,', 'and the database between'] },
+  { i: 'gem', args: ['#a259e0', '#d6b0ff'], name: 'C#', color: C.pink, lore: ['Apps and tools'] },
+  { i: 'ingot', args: ['#4d79e6'], name: 'C++', color: C.aqua, lore: ['When speed matters'] },
+  { i: 'snake', name: 'Python', color: C.yellow, lore: ['Scripts and automation'] },
+  null, null,
+];
+const storageItems = Array(27).fill(null);
+Object.assign(storageItems, {
+  1: { i: 'xp', name: "Bottle o' Experience", color: C.yellow, count: 2, lore: ['2 years of coding'] },
+  4: { i: 'quill', name: 'Book and Quill', color: C.white, lore: ['github.com/KettehDev'], hint: 'click to open', href: 'https://github.com/KettehDev' },
+  9: { i: 'mug', name: 'Coffee', color: C.gold, count: 37, lore: ['Fuel for late builds'], hint: 'click to buy me one', action: 'coffee' },
+  13: { i: 'clock', name: 'Clock', color: C.white, lore: ['Replies within a day'] },
+  17: { i: 'bug', name: 'Bug', color: C.gray, count: 3, lore: ['The last few left alive'] },
+  22: { i: 'bed', name: 'Bed', color: C.white, lore: ['Rarely used'] },
+});
+
+const tip = document.getElementById('tooltip');
+function showTip(item, e) {
+  if (!item) { tip.hidden = true; return; }
+  tip.innerHTML = `<span style="color:${item.color}">${item.name}</span>` +
+    item.lore.map(l => `<span class="lore">${l}</span>`).join('') +
+    (item.hint ? `<span class="hint">${item.hint}</span>` : '');
+  tip.hidden = false;
+  moveTip(e);
+}
+function moveTip(e) {
+  if (tip.hidden) return;
+  let x, y;
+  if (e && 'clientX' in e && e.clientX) { x = e.clientX + 14; y = e.clientY - 30; }
+  else { const r = e.target.getBoundingClientRect(); x = r.right + 6; y = r.top - 6; }
+  const w = tip.offsetWidth;
+  if (x + w > innerWidth - 8) x = Math.max(8, x - w - 28);
+  tip.style.left = x + 'px'; tip.style.top = Math.max(8, y) + 'px';
+}
+
+function makeSlot(item) {
+  const b = document.createElement(item && item.href ? 'a' : 'button');
+  b.className = 'slot';
+  if (item && item.href) { b.href = item.href; b.target = '_blank'; b.rel = 'noopener'; } else b.type = 'button';
+  if (item) {
+    const ic = (item.args ? ICONS[item.i](...item.args) : ICONS[item.i])();
+    b.appendChild(ic);
+    if (item.count) { const c = document.createElement('span'); c.className = 'count'; c.textContent = item.count; b.appendChild(c); }
+    if (item.glint) b.classList.add('glint');
+    b.setAttribute('aria-label', `${item.name}. ${item.lore.join(' ')}`);
+  } else {
+    b.setAttribute('aria-label', 'Empty slot');
+  }
+  if (item && item.action === 'coffee') b.addEventListener('click', () => openCoffee(true));
+  b.addEventListener('mouseenter', e => showTip(item, e));
+  b.addEventListener('mousemove', moveTip);
+  b.addEventListener('mouseleave', () => tip.hidden = true);
+  b.addEventListener('focus', e => showTip(item, e));
+  b.addEventListener('blur', () => tip.hidden = true);
+  return b;
+}
+const storage = document.getElementById('storage'), hotbar = document.getElementById('hotbar');
+storageItems.forEach(it => storage.appendChild(makeSlot(it)));
+hotbarItems.forEach((it, i) => {
+  const s = makeSlot(it);
+  s.addEventListener('click', () => select(i));
+  hotbar.appendChild(s);
+});
+let sel = 0;
+function select(i) { sel = i; [...hotbar.children].forEach((s, j) => s.classList.toggle('sel', j === i)); }
+select(0);
+document.getElementById('inv').addEventListener('wheel', e => { e.preventDefault(); select((sel + (e.deltaY > 0 ? 1 : 8)) % 9); }, { passive: false });
+addEventListener('keydown', e => { const n = parseInt(e.key, 10); if (n >= 1 && n <= 9 && !home.hidden) select(n - 1); });
+addEventListener('scroll', () => tip.hidden = true, { passive: true });
+
+// ================= copy discord =================
+const cd = document.getElementById('copyDiscord'), copied = document.getElementById('copied');
+cd.addEventListener('click', () => {
+  const show = () => { copied.hidden = false; setTimeout(() => copied.hidden = true, 1200); };
+  const pick = () => { const r = document.createRange(); r.selectNodeContents(cd); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
+  try { navigator.clipboard.writeText('zoe_mahhh').then(show, pick); } catch (err) { pick(); }
+});
+
+
+// ================= buy me a coffee =================
+const coffeeBtn = document.getElementById('coffeeBtn'), coffeeBox = document.getElementById('coffeeBox');
+function openCoffee(scroll) {
+  coffeeBox.hidden = false; coffeeBtn.setAttribute('aria-expanded', 'true');
+  if (scroll) document.getElementById('coffee').scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'start' });
+}
+coffeeBtn.addEventListener('click', () => {
+  const open = coffeeBox.hidden;
+  coffeeBox.hidden = !open; coffeeBtn.setAttribute('aria-expanded', String(open));
+});
+const copyLtc = document.getElementById('copyLtc'), ltc = document.getElementById('ltc');
+copyLtc.addEventListener('click', () => {
+  const done = () => { copyLtc.textContent = 'copied'; setTimeout(() => copyLtc.textContent = 'copy', 1400); };
+  const pick = () => { const r = document.createRange(); r.selectNodeContents(ltc); const sl = getSelection(); sl.removeAllRanges(); sl.addRange(r); };
+  try { navigator.clipboard.writeText(ltc.textContent.trim()).then(done, pick); } catch (err) { pick(); }
+});
+
+// ================= rain on the page =================
+const rc = document.getElementById('rain'), rg = rc.getContext('2d');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let drops = [];
+function sizeRain() {
+  rc.width = innerWidth * devicePixelRatio; rc.height = innerHeight * devicePixelRatio;
+  const n = Math.round(innerWidth * innerHeight / 9000);
+  drops = Array.from({ length: n }, () => ({ x: Math.random(), y: Math.random(), l: 8 + Math.random() * 16, v: .6 + Math.random() * .6, a: .05 + Math.random() * .12 }));
+}
+sizeRain(); addEventListener('resize', sizeRain);
+let rainOn = false;
+function rainFrame() {
+  if (!rainOn) return;
+  const w = rc.width, h = rc.height, d = devicePixelRatio;
+  const rgb = getComputedStyle(document.documentElement).getPropertyValue('--rain').trim();
+  rg.clearRect(0, 0, w, h);
+  rg.lineWidth = d;
+  for (const p of drops) {
+    p.y += p.v * 0.012; p.x -= p.v * 0.0016;
+    if (p.y > 1.05) { p.y = -0.05; p.x = Math.random() * 1.1; }
+    rg.strokeStyle = `rgba(${rgb}, ${p.a})`;
+    rg.beginPath(); rg.moveTo(p.x * w, p.y * h); rg.lineTo(p.x * w - p.l * 0.15 * d, p.y * h + p.l * d); rg.stroke();
+  }
+  requestAnimationFrame(rainFrame);
+}
+
+// ================= rainy lo-fi: rain, distant thunder, soft keys (all synthesized) =================
+let ctx, master, wet, playing = false, started = false, musicTimer = null, thunderTimer = null, dropTimer = null;
+const hz = m => 440 * Math.pow(2, (m - 69) / 12);
+function noiseBuf(sec, brown) {
+  const b = ctx.createBuffer(2, ctx.sampleRate * sec, ctx.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = b.getChannelData(ch); let last = 0;
+    for (let i = 0; i < d.length; i++) {
+      const w = Math.random() * 2 - 1;
+      if (brown) { last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; } else d[i] = w;
+    }
+  }
+  return b;
+}
+function reverbIR(sec) {
+  const b = ctx.createBuffer(2, ctx.sampleRate * sec, ctx.sampleRate);
+  for (let ch = 0; ch < 2; ch++) {
+    const d = b.getChannelData(ch);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3);
+  }
+  return b;
+}
+let white, brown;
+function setup() {
+  ctx = new (window.AudioContext || window.webkitAudioContext)();
+  white = noiseBuf(4, false); brown = noiseBuf(6, true);
+  master = ctx.createGain(); master.gain.value = 0; master.connect(ctx.destination);
+  const verb = ctx.createConvolver(); verb.buffer = reverbIR(4);
+  wet = ctx.createGain(); wet.gain.value = 0.45; wet.connect(verb); verb.connect(master);
+
+  // steady rain: two filtered noise layers with a slow swell
+  const layer = (type, freq, q, vol, buf) => {
+    const s = ctx.createBufferSource(); s.buffer = buf; s.loop = true;
+    const f = ctx.createBiquadFilter(); f.type = type; f.frequency.value = freq; f.Q.value = q;
+    const g = ctx.createGain(); g.gain.value = vol;
+    s.connect(f); f.connect(g); g.connect(master); s.start();
+    const lfo = ctx.createOscillator(), lg = ctx.createGain();
+    lfo.frequency.value = 0.05 + Math.random() * 0.05; lg.gain.value = vol * 0.35;
+    lfo.connect(lg); lg.connect(g.gain); lfo.start();
+  };
+  layer('lowpass', 900, 0.3, 0.32, brown);
+  layer('bandpass', 2600, 0.5, 0.06, white);
+  layer('highpass', 7000, 0.2, 0.012, white);
+}
+function droplet() {
+  const t = ctx.currentTime + Math.random() * 0.05;
+  if (Math.random() < 0.55) {       // tick on the window
+    const s = ctx.createBufferSource(); s.buffer = white;
+    const f = ctx.createBiquadFilter(); f.type = 'bandpass'; f.frequency.value = 2500 + Math.random() * 4000; f.Q.value = 6;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.05 + Math.random() * 0.05, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+    const p = ctx.createStereoPanner(); p.pan.value = Math.random() * 2 - 1;
+    s.connect(f); f.connect(g); g.connect(p); p.connect(master); s.start(t, Math.random() * 3); s.stop(t + 0.05);
+  } else {                          // little plink from a gutter
+    const o = ctx.createOscillator(), g = ctx.createGain(), p = ctx.createStereoPanner();
+    const f0 = 900 + Math.random() * 1600;
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(f0 * 1.6, t + 0.04);
+    g.gain.setValueAtTime(0.018, t); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+    p.pan.value = Math.random() * 1.6 - 0.8;
+    o.connect(g); g.connect(p); p.connect(master); p.connect(wet); o.start(t); o.stop(t + 0.1);
+  }
+}
+function thunder() {
+  const t = ctx.currentTime;
+  const s = ctx.createBufferSource(); s.buffer = brown;
+  const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 160;
+  const g = ctx.createGain();
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.5, t + 0.8);
+  g.gain.linearRampToValueAtTime(0.25, t + 2); g.gain.linearRampToValueAtTime(0.35, t + 2.6);
+  g.gain.exponentialRampToValueAtTime(0.001, t + 7);
+  s.connect(f); f.connect(g); g.connect(master); g.connect(wet); s.start(t, Math.random()); s.stop(t + 7.2);
+}
+// soft piano: Am9 - Fmaj7 - C/E - G6, slow and roomy
+const chords = [[57, 60, 64, 67, 71], [53, 57, 60, 64, 69], [52, 55, 60, 64, 67], [55, 59, 62, 64, 71]];
+const scale = [72, 74, 76, 79, 81, 83, 84];
+let bar = 0;
+function note(m, t, vol, len) {
+  const o = ctx.createOscillator(), o2 = ctx.createOscillator(), g = ctx.createGain(), f = ctx.createBiquadFilter();
+  o.type = 'triangle'; o2.type = 'sine'; o.frequency.value = hz(m); o2.frequency.value = hz(m) * 2.001;
+  const g2 = ctx.createGain(); g2.gain.value = 0.25;
+  f.type = 'lowpass'; f.frequency.value = 1800;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.012);
+  g.gain.exponentialRampToValueAtTime(vol * 0.3, t + 0.6); g.gain.exponentialRampToValueAtTime(0.0001, t + len);
+  o.connect(f); o2.connect(g2); g2.connect(f); f.connect(g); g.connect(master); g.connect(wet);
+  o.start(t); o2.start(t); o.stop(t + len + 0.1); o2.stop(t + len + 0.1);
+}
+function playBar() {
+  const t = ctx.currentTime + 0.05, beat = 1.05;
+  const ch = chords[bar % 4];
+  note(ch[0] - 12, t, 0.08, 5);
+  ch.slice(1).forEach((m, i) => note(m, t + 0.09 * i + Math.random() * 0.03, 0.035, 4.5));
+  for (let b = 1; b < 4; b++) if (Math.random() < 0.6) note(scale[Math.floor(Math.random() * scale.length)], t + b * beat + Math.random() * 0.1, 0.03, 2.5);
+  bar++;
+}
+const playBtn = document.getElementById('play'), playLabel = document.getElementById('playlabel');
+function setPlaying(on) {
+  if (!ctx) setup();
+  started = true; playing = on;
+  const now = ctx.currentTime;
+  master.gain.cancelScheduledValues(now); master.gain.setValueAtTime(master.gain.value, now);
+  if (on) {
+    ctx.resume();
+    master.gain.linearRampToValueAtTime(0.7, now + 3);
+    if (!musicTimer) { playBar(); musicTimer = setInterval(playBar, 4200); }
+    if (!dropTimer) { const loop = () => { if (!playing) { dropTimer = null; return; } droplet(); dropTimer = setTimeout(loop, 60 + Math.random() * 260); }; dropTimer = setTimeout(loop, 400); }
+    if (!thunderTimer) { const tl = () => { if (playing) thunder(); thunderTimer = setTimeout(tl, 35000 + Math.random() * 40000); }; thunderTimer = setTimeout(tl, 9000); }
+    playLabel.textContent = 'pause rain'; playBtn.classList.add('playing');
+    rainOn = true; rc.classList.add('on'); if (!reduce) requestAnimationFrame(rainFrame);
+  } else {
+    master.gain.linearRampToValueAtTime(0, now + 1);
+    setTimeout(() => {
+      if (playing) return;
+      clearInterval(musicTimer); musicTimer = null; clearTimeout(thunderTimer); thunderTimer = null;
+      ctx.suspend();
+    }, 1100);
+    playLabel.textContent = 'play rain'; playBtn.classList.remove('playing');
+    rc.classList.remove('on'); setTimeout(() => { if (!playing) rainOn = false; }, 2500);
+  }
+}
+playBtn.addEventListener('click', e => { e.stopPropagation(); setPlaying(!playing); });
+// browsers only allow sound after you interact, so the first click anywhere starts the rain
+document.addEventListener('pointerdown', () => { if (!started) setPlaying(true); }, { once: true });
+</script>
+
+</body></html>
